@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שאלות אמריקאיות — לולאת for ב-Java</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    direction: rtl;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 1.5rem; color: #1a1a1a; }
+  .progress-bar-bg { height: 4px; background: #ddd; border-radius: 2px; margin-bottom: 1.5rem; }
+  .progress-bar-fill { height: 4px; background: #7F77DD; border-radius: 2px; transition: width 0.4s; }
+  .q-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .q-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .q-num-badge { font-size: 12px; color: #888; }
+  .q-topic { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #EEEDFE; color: #3C3489; }
+  .q-text { font-size: 15px; margin-bottom: 12px; line-height: 1.5; }
+  .code-block {
+    background: #f8f8f8; border: 1px solid #e5e5e5; border-radius: 8px;
+    padding: 12px 14px; font-family: 'Courier New', monospace; font-size: 13px;
+    margin-bottom: 14px; white-space: pre; overflow-x: auto; line-height: 1.7;
+    direction: ltr; text-align: left;
+  }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border: 1px solid #ddd; border-radius: 8px; cursor: pointer;
+    font-size: 14px; background: transparent; width: 100%;
+    direction: ltr; text-align: left;
+    font-family: 'Courier New', monospace;
+    color: #1a1a1a; transition: background 0.15s;
+  }
+  .opt:hover:not(.disabled) { background: #f8f8f8; }
+  .opt.correct { background: #EAF3DE; border-color: #3B6D11; color: #27500A; }
+  .opt.wrong   { background: #FCEBEB; border-color: #A32D2D; color: #791F1F; }
+  .opt.disabled { pointer-events: none; }
+  .opt-letter { font-size: 12px; font-weight: 500; min-width: 22px; color: #aaa; font-family: 'Segoe UI', Arial, sans-serif; }
+  .explanation {
+    display: none; margin-top: 12px; padding: 10px 14px;
+    font-size: 13px; color: #555; line-height: 2;
+    border-right: 3px solid #7F77DD; background: #f8f8f8;
+    direction: rtl; text-align: right;
+  }
+  .explanation.show { display: block; }
+  .exp-line { display: block; direction: rtl; text-align: right; }
+  .exp-code {
+    display: block; direction: ltr; text-align: left;
+    font-family: 'Courier New', monospace; font-size: 12px;
+    background: #fff; padding: 3px 8px; border-radius: 4px; margin: 2px 0;
+  }
+  .next-btn {
+    display: none; margin-top: 1rem; padding: 10px 22px;
+    border: 1px solid #7F77DD; border-radius: 8px; background: transparent;
+    cursor: pointer; font-size: 14px; color: #534AB7; font-family: inherit;
+  }
+  .next-btn:hover { background: #EEEDFE; }
+  .next-btn.show { display: inline-block; }
+  .score-box { text-align: center; padding: 3rem 1rem; }
+  .score-num { font-size: 56px; font-weight: 500; color: #1a1a1a; }
+  .score-label { font-size: 16px; color: #666; margin-top: 8px; }
+  .restart-btn {
+    margin-top: 1.5rem; padding: 10px 28px; border: 1px solid #ccc;
+    border-radius: 8px; background: transparent; cursor: pointer;
+    font-size: 14px; font-family: inherit; color: #1a1a1a;
+  }
+  .restart-btn:hover { background: #f5f5f5; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>שאלות אמריקאיות — לולאת <code>for</code> ב-Java</h1>
+  <div id="app"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    topic: "לולאה עולה",
+    text: "מה יודפס?",
+    code: `for (int i = 0; i < 5; i++) {\n    System.out.print(i + " ");\n}`,
+    options: ["0 1 2 3 4", "1 2 3 4 5", "0 1 2 3 4 5", "1 2 3 4"],
+    answer: 0,
+    explanation: [
+      { type: "he", text: "i מתחיל ב-0, התנאי הוא:" },
+      { type: "code", text: "i < 5" },
+      { type: "he", text: "ולכן 5 לא מודפס. הפלט:" },
+      { type: "code", text: "0 1 2 3 4" }
+    ]
+  },
+  {
+    topic: "לולאה יורדת",
+    text: "מה יודפס?",
+    code: `for (int i = 5; i > 0; i--) {\n    System.out.print(i + " ");\n}`,
+    options: ["5 4 3 2 1 0", "4 3 2 1 0", "5 4 3 2 1", "6 5 4 3 2 1"],
+    answer: 2,
+    explanation: [
+      { type: "he", text: "i מתחיל ב-5 ויורד ב-1 בכל איטרציה. התנאי הוא:" },
+      { type: "code", text: "i > 0" },
+      { type: "he", text: "ולכן 0 לא מודפס. הפלט:" },
+      { type: "code", text: "5 4 3 2 1" }
+    ]
+  },
+  {
+    topic: "דילוגים",
+    text: "מה יודפס?",
+    code: `for (int i = 0; i <= 10; i += 3) {\n    System.out.print(i + " ");\n}`,
+    options: ["0 3 6 9 12", "0 3 6 9", "3 6 9 12", "0 3 6 9 10"],
+    answer: 1,
+    explanation: [
+      { type: "he", text: "הצעד הוא +3, לכן i עובר על:" },
+      { type: "code", text: "0 → 3 → 6 → 9 → 12" },
+      { type: "he", text: "כאשר i=12 התנאי i<=10 נכשל, הלולאה עוצרת. הפלט:" },
+      { type: "code", text: "0 3 6 9" }
+    ]
+  },
+  {
+    topic: "סכימה",
+    text: "מה יודפס?",
+    code: `int sum = 0;\nfor (int i = 1; i <= 4; i++) {\n    sum += i;\n}\nSystem.out.println(sum);`,
+    options: ["6", "10", "15", "4"],
+    answer: 1,
+    explanation: [
+      { type: "he", text: "הלולאה רצה 4 פעמים ומחברת את i לתוך sum:" },
+      { type: "code", text: "1 + 2 + 3 + 4 = 10" },
+      { type: "he", text: "הפלט:" },
+      { type: "code", text: "10" }
+    ]
+  },
+  {
+    topic: "כפל בצעד",
+    text: "מה יודפס?",
+    code: `for (int i = 2; i < 10; i *= 2) {\n    System.out.print(i + " ");\n}`,
+    options: ["2 4 6 8 10", "2 4 8 16", "2 4 8", "1 2 4 8"],
+    answer: 2,
+    explanation: [
+      { type: "he", text: "i מוכפל ב-2 בכל איטרציה:" },
+      { type: "code", text: "2 → 4 → 8 → 16" },
+      { type: "he", text: "כאשר i=16 התנאי i<10 נכשל. הפלט:" },
+      { type: "code", text: "2 4 8" }
+    ]
+  },
+  {
+    topic: "דילוגים יורדים",
+    text: "מה יודפס?",
+    code: `for (int i = 10; i >= 1; i -= 3) {\n    System.out.print(i + " ");\n}`,
+    options: ["10 7 4 1", "10 7 4", "9 6 3", "10 7 4 2"],
+    answer: 0,
+    explanation: [
+      { type: "he", text: "i יורד ב-3 בכל פעם:" },
+      { type: "code", text: "10 → 7 → 4 → 1 → -2" },
+      { type: "he", text: "כאשר i=-2 התנאי i>=1 נכשל. הפלט:" },
+      { type: "code", text: "10 7 4 1" }
+    ]
+  },
+  {
+    topic: "ערך אחרי הלולאה",
+    text: "מה יודפס?",
+    code: `int i;\nfor (i = 0; i < 5; i++) { }\nSystem.out.println(i);`,
+    options: ["4", "5", "0", "compilation error"],
+    answer: 1,
+    explanation: [
+      { type: "he", text: "i הוגדר מחוץ ללולאה ולכן נגיש אחריה. הלולאה עוצרת כאשר i=5 (התנאי i<5 נכשל). הפלט:" },
+      { type: "code", text: "5" }
+    ]
+  },
+  {
+    topic: "לולאה ריקה",
+    text: "מה יודפס?",
+    code: `for (int i = 5; i < 5; i++) {\n    System.out.print(i + " ");\n}\nSystem.out.println("done");`,
+    options: ["5 done", "done", "nothing printed", "5"],
+    answer: 1,
+    explanation: [
+      { type: "he", text: "התנאי הראשוני הוא:" },
+      { type: "code", text: "5 < 5  →  false" },
+      { type: "he", text: "הלולאה לא מתבצעת אפילו פעם אחת. מודפס רק:" },
+      { type: "code", text: "done" }
+    ]
+  },
+  {
+    topic: "תנאי בתוך לולאה",
+    text: "מה יודפס?",
+    code: `for (int i = 1; i <= 5; i++) {\n    if (i % 2 == 0)\n        System.out.print(i + " ");\n}`,
+    options: ["1 3 5", "2 4", "1 2 3 4 5", "2 4 6"],
+    answer: 1,
+    explanation: [
+      { type: "he", text: "מודפסים רק ערכים שעבורם התנאי מתקיים:" },
+      { type: "code", text: "i % 2 == 0  →  i זוגי" },
+      { type: "he", text: "בטווח 1 עד 5 הזוגיים הם 2 ו-4. הפלט:" },
+      { type: "code", text: "2 4" }
+    ]
+  },
+  {
+    topic: "חלוקה בצעד",
+    text: "מה יודפס?",
+    code: `int count = 0;\nfor (int i = 100; i > 0; i /= 2) {\n    count++;\n}\nSystem.out.println(count);`,
+    options: ["6", "7", "8", "50"],
+    answer: 1,
+    explanation: [
+      { type: "he", text: "i מחולק ב-2 בכל פעם:" },
+      { type: "code", text: "100→50→25→12→6→3→1→0" },
+      { type: "he", text: "7 איטרציות עד שi=0 והתנאי i>0 נכשל. הפלט:" },
+      { type: "code", text: "7" }
+    ]
+  }
+];
+
+let current = 0, score = 0;
+
+function buildExplanation(lines) {
+  return lines.map(l =>
+    l.type === 'code'
+      ? `<span class="exp-code">${l.text}</span>`
+      : `<span class="exp-line">${l.text}</span>`
+  ).join('');
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if (current >= questions.length) {
+    app.innerHTML = `<div class="score-box">
+      <div class="score-num">${score}/${questions.length}</div>
+      <div class="score-label">${score >= 8 ? 'מצוין!' : score >= 6 ? 'טוב מאוד!' : score >= 4 ? 'לא רע, כדאי לחזור על החומר' : 'כדאי לחזור על לולאות for'}</div>
+      <button class="restart-btn" onclick="restart()">התחל מחדש</button>
+    </div>`;
+    return;
+  }
+  const q = questions[current];
+  const letters = ['A', 'B', 'C', 'D'];
+  const pct = (current / questions.length * 100).toFixed(0);
+  app.innerHTML = `
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-num-badge">שאלה ${current + 1} מתוך ${questions.length}</span>
+        <span class="q-topic">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.text}</div>
+      <div class="code-block">${q.code}</div>
+      <div class="options" id="opts">
+        ${q.options.map((o, i) => `<button class="opt" onclick="choose(${i})"><span class="opt-letter">${letters[i]}.</span>${o}</button>`).join('')}
+      </div>
+      <div class="explanation" id="exp">${buildExplanation(q.explanation)}</div>
+      <button class="next-btn" id="nxt" onclick="next()">${current === questions.length - 1 ? 'סיום וראה ציון ←' : 'לשאלה הבאה ←'}</button>
+    </div>`;
+}
+
+function choose(idx) {
+  const q = questions[current];
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach(o => o.classList.add('disabled'));
+  opts[idx].classList.add(idx === q.answer ? 'correct' : 'wrong');
+  if (idx !== q.answer) opts[q.answer].classList.add('correct');
+  document.getElementById('exp').classList.add('show');
+  document.getElementById('nxt').classList.add('show');
+  if (idx === q.answer) score++;
+}
+
+function next() { current++; render(); }
+function restart() { current = 0; score = 0; render(); }
+
+render();
+</script>
+</body>
+</html>
